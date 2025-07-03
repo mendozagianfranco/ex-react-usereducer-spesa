@@ -1,5 +1,9 @@
-export default function ListProducts({ products }) {
-    console.log(products);
+export default function ListProducts({ products, SetAddedProducts, addedProducts }) {
+
+    function addProduct(product) {
+        if (addedProducts.find(p => p.name === product.name)) return;
+        SetAddedProducts(curr => [...curr, { ...product, quantity: 1 }]);
+    }
 
     return (
         <div>
@@ -7,6 +11,7 @@ export default function ListProducts({ products }) {
                 <div key={index}>
                     <h2>{product.name}</h2>
                     <p>Price: {product.price}</p>
+                    <button onClick={() => addProduct(product)}>Aggiungi al carrello</button>
                 </div>
             ))}
         </div>
