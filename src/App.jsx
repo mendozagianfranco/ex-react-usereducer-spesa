@@ -27,6 +27,7 @@ function App() {
   }
 
   function updateProductQuantity(name, quantity) {
+    if (quantity % 1 != 0 || quantity < 1) return;
     SetAddedProducts(curr => curr.map(p => p.name === name ? { ...p, quantity } : p));
   }
 
@@ -48,7 +49,8 @@ function App() {
             <div key={index}>
               <h3>{p.name}</h3>
               <p>Price: {p.price.toFixed(2)} €</p>
-              <p>Quantity: {p.quantity}</p>
+              {/* <p>Quantity: {p.quantity}</p>*/}
+              <p>Quantity : <input type="number" value={p.quantity} onChange={(e) => updateProductQuantity(p.name, Number(e.target.value))} /></p>
               <button onClick={() => removeFromCart(p)}>Rimuovi dal carrello</button>
             </div>
           ))}
