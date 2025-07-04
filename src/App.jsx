@@ -1,4 +1,4 @@
-import { useReducer, useState } from 'react';
+import { useReducer } from 'react';
 import ListProducts from './components/ListProducts';
 
 const products = [
@@ -19,16 +19,17 @@ function App() {
       case 'ADD_ITEM':
         const findProduct = state.find(p => p.name === action.payload.name);
         if (findProduct) {
-          return state.map(p => p.name === action.payload.name ? { ...p, quantity: p.quantity + 1 } : p);
+          action.payload.quantity = findProduct.quantity + 1;
         } else {
           return [...state, { ...action.payload, quantity: 1 }];
         }
-      case 'REMOVE_ITEM':
-        return state.filter(p => p.name !== action.payload.name);
+
       case 'UPDATE_QUANTITY':
         const quantity = action.payload.quantity;
         if (quantity % 1 != 0 || quantity < 1) return state;
         return state.map(p => p.name === action.payload.name ? { ...p, quantity } : p);
+      case 'REMOVE_ITEM':
+        return state.filter(p => p.name !== action.payload.name);
       default:
         return state;
     }
