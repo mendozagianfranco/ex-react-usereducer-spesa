@@ -11,6 +11,9 @@ const products = [
 
 function App() {
   const [addedProducts, SetAddedProducts] = useState([]);
+  const totalPrice = addedProducts.reduce((acc, curr) => {
+    return acc += curr.price * curr.quantity;
+  }, 0);
 
   return (
     <>
@@ -18,6 +21,7 @@ function App() {
       <ListProducts products={products} addedProducts={addedProducts} SetAddedProducts={SetAddedProducts} />
 
       <h2>List dei prodotti nel carrello</h2>
+      <div>Totale nel carrello: {totalPrice}</div>
       {addedProducts.map((p, index) => (
         <div key={index}>
           <h3>{p.name}</h3>
@@ -25,7 +29,6 @@ function App() {
           <p>Quantity: {p.quantity}</p>
         </div>
       ))}
-
     </>
   );
 }

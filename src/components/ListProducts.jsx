@@ -1,8 +1,21 @@
 export default function ListProducts({ products, SetAddedProducts, addedProducts }) {
 
     function addProduct(product) {
-        if (addedProducts.find(p => p.name === product.name)) return;
-        SetAddedProducts(curr => [...curr, { ...product, quantity: 1 }]);
+        const findProduct = addedProducts.find(p => p.name === product.name);
+        if (findProduct) {
+            updateProductQuantity(findProduct);
+        } else {
+
+            SetAddedProducts(curr => [...curr, { ...product, quantity: 1 }]);
+        }
+    }
+
+    function updateProductQuantity(product) {
+        product.quantity += 1;
+        SetAddedProducts(curr => curr.map(p => p));
+    }
+    function removeFromCart(product) {
+        SetAddedProducts(curr => curr.filter(p => p.name !== product.name));
     }
 
     return (
@@ -12,6 +25,7 @@ export default function ListProducts({ products, SetAddedProducts, addedProducts
                     <h2>{product.name}</h2>
                     <p>Price: {product.price}</p>
                     <button onClick={() => addProduct(product)}>Aggiungi al carrello</button>
+                    <button onClick={() => removeFromCart(product)}>Rimuovi dal carrello</button>
                 </div>
             ))}
         </div>
