@@ -23,15 +23,12 @@ function App() {
         } else {
           return [...state, { ...action.payload, quantity: 1 }];
         }
-        break;
       case 'REMOVE_ITEM':
         return state.filter(p => p.name !== action.payload.name);
-        break;
       case 'UPDATE_QUANTITY':
         const quantity = action.payload.quantity;
         if (quantity % 1 != 0 || quantity < 1) return state;
         return state.map(p => p.name === action.payload.name ? { ...p, quantity } : p);
-        break;
       default:
         return state;
     }
