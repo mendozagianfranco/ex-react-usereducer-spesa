@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 import ListProducts from './components/ListProducts';
 
 const products = [
@@ -11,35 +11,40 @@ const products = [
 
 
 function App() {
-  const [addedProducts, SetAddedProducts] = useState([]);
+  // const [addedProducts, SetAddedProducts] = useState([]);
+  const [addedProducts, dispatch] = useReducer(cartReducer, []);
+
+  function cartReducer(state, action) {
+    switch (action.type) {
+      case 'ADD_ITEM':
+        const findProduct = state.find(p => p.name === action.payload.name);
+        if (findProduct) {
+          return state.map(p => p.name === action.payload.name ? { ...p, quantity: p.quantity + 1 } : p);
+        } else {
+          return [...state, { ...action.payload, quantity: 1 }];
+        }
+        break;
+      case 'REMOVE_ITEM':
+        return state.filter(p => p.name !== action.payload.name);
+        break;
+      case 'UPDATE_QUANTITY':
+        const quantity = action.payload.quantity;
+        if (quantity % 1 != 0 || quantity < 1) return state;
+        return state.map(p => p.name === action.payload.name ? { ...p, quantity } : p);
+        break;
+      default:
+        return state;
+    }
+  }
+
   const totalPrice = addedProducts.reduce((acc, curr) => {
     return acc + (curr.price * curr.quantity);
   }, 0);
 
-  function addProduct(product) {
-    const findProduct = addedProducts.find(p => p.name === product.name);
-    if (findProduct) {
-      updateProductQuantity(findProduct.name, findProduct.quantity + 1);
-      return;
-    }
-    SetAddedProducts(curr => [...curr, { ...product, quantity: 1 }]);
-
-  }
-
-  function updateProductQuantity(name, quantity) {
-    if (quantity % 1 != 0 || quantity < 1) return;
-    SetAddedProducts(curr => curr.map(p => p.name === name ? { ...p, quantity } : p));
-  }
-
-  function removeFromCart(product) {
-    SetAddedProducts(curr => curr.filter(p => p.name !== product.name));
-  }
-
-
   return (
     <>
       <h1>Lista Prodotti</h1>
-      <ListProducts products={products} addProduct={addProduct} removeFromCart={removeFromCart} />
+      <ListProducts products={products} addProduct={dispatch} />
 
       {addedProducts.length > 0 && (
         <>
@@ -50,8 +55,8 @@ function App() {
               <h3>{p.name}</h3>
               <p>Price: {p.price.toFixed(2)} €</p>
               {/* <p>Quantity: {p.quantity}</p>*/}
-              <p>Quantity : <input type="number" value={p.quantity} onChange={(e) => updateProductQuantity(p.name, Number(e.target.value))} /></p>
-              <button onClick={() => removeFromCart(p)}>Rimuovi dal carrello</button>
+              <p>Quantity : <input type="number" value={p.quantity} onChange={(e) => dispatch({ type: 'UPDATE_QUANTITY', payload: { name: p.name, quantity: e.target.value } })} /></p>
+              <button onClick={() => dispatch({ type: 'REMOVE_ITEM', payload: p })}>Rimuovi dal carrello</button>
             </div>
           ))}
         </>)
